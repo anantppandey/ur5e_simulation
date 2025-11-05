@@ -8,7 +8,6 @@ Follow these quick steps to establish the VS Code <-> Isaac Sim connection.
 
 ![Isaac Sim extension](assets/isaac_sim_extension.png)
 
-
 2. Configure the extension settings in VS Code. Open your VS Code settings and set the required fields.
 
 ![VS Code extension settings](assets/vs_code_extension_settings.png)
