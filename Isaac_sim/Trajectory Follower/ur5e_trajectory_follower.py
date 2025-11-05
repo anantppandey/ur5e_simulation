@@ -263,8 +263,6 @@ async def execute_trajectory(joint_trajectory, gripper_trajectory, steps_per_poi
         for i in range(50):
             if _should_stop:
                 print("Stopped during initialization")
-                await my_world.stop_async()
-                World.clear_instance()
                 return
             my_world.step(render=True)
             if i % 10 == 0:
@@ -274,8 +272,6 @@ async def execute_trajectory(joint_trajectory, gripper_trajectory, steps_per_poi
         for attempt in range(10):
             if _should_stop:
                 print("Stopped during position reading")
-                await my_world.stop_async()
-                World.clear_instance()
                 return
             current_pos = my_robot.get_joint_positions()
             if current_pos is not None:
@@ -286,8 +282,6 @@ async def execute_trajectory(joint_trajectory, gripper_trajectory, steps_per_poi
         
         if current_pos is None:
             print("Error: Could not read joint positions after multiple attempts")
-            await my_world.stop_async()
-            World.clear_instance()
             return
         
         num_joints = len(current_pos)
@@ -363,30 +357,17 @@ async def execute_trajectory(joint_trajectory, gripper_trajectory, steps_per_poi
         print(f"Actual simulation Hz: {total_steps/elapsed:.2f}")
         print(f"Expected: {50.0/steps_per_point:.2f} Hz")
         
-        print("\n=== AUTO-CLEANUP ===")
-        if my_world.is_playing():
-            print("Stopping simulation completely...")
-            await my_world.stop_async()
-        
-        print("Clearing World instance...")
-        World.clear_instance()
-        print("Simulation stopped.")
-        print("Safe to use GUI now. Run script again to execute another trajectory.")
-        print("===================\n")
+        print("\nTrajectory finished. Simulation still running.")
+        print("Call cleanup_and_stop() to stop simulation if needed.")
         
     except Exception as e:
         print(f"Error during trajectory execution: {e}")
         import traceback
         traceback.print_exc()
-        my_world = World.instance()
-        if my_world is not None:
-            if my_world.is_playing():
-                await my_world.stop_async()
-            World.clear_instance()
     finally:
         _is_running = False
         _should_stop = False
-        print("Trajectory execution ended. Simulation stopped. Safe to use GUI.")
+        print("Trajectory execution ended.")
 
 # Load trajectory from file
 trajectory_file = "/home/azureuser/IsaacSim/projects/episode_0_full.txt"
